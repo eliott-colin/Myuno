@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello HomeController!{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; display: flex; flex-direction: column; align-items: center; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<div class="example-wrapper">
+    <h1>Hello welcome to myuno!</h1>
+    <div class="image-container" style="width: 50%; display: flex; justify-content: center; align-items: center;">
+        <img src="{{ asset('assets/img/start.png') }}" alt="Images de lancement d'application uno avec des cartes et le logo uno" style=" display: block; max-width: 100%; height: auto;">
+    </div>
+    
+    <a href="{{ path('app_start') }}">Start</a>
+
+</div>
+{% endblock %}

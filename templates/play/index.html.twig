@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello PlayController!{% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<div class="example-wrapper">
+    <h1>Myuno</h1>
+
+    {% for i in 1..4 %}
+        <p>Joueur {{ i == 4 ? ' (Vous)' : i }} : {{ cardCount[i-1] ?? 0 }}</p>
+    {% endfor %}
+
+    {% for card in cards %}
+        <div style="background-color:{{ card.color }};">
+        <a href="{{ path('app_player', {'id': card.id}) }} style="color: white; text-decoration: none;">
+            <p>{{ card.label }} - {{ card.color }}</p>
+        </a>
+        </div>
+    {% endfor %}
+
+    <p>{{ cardInit.label }} - {{ cardInit.color }} - {{ cardInit.isPlayed|date('Y-m-d H:i:s') }}</p>
+
+    
+</div>
+{% endblock %}
