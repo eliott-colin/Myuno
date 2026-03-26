@@ -4,11 +4,13 @@ namespace App\Services;
 
 use App\Entity\Card;
 use App\Repository\CardRepository;
+use App\Repository\GameRepository;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Game;
 
 class CardsService {
-    public function initCard(EntityManagerInterface $entityManager, int $idPlayer, ?DateTimeImmutable $isPlayed = null): void {
+    public function initCard(EntityManagerInterface $entityManager, int $idPlayer, Game $idGame, ?DateTimeImmutable $isPlayed = null,): void {
         $colors = ['red', 'green', 'blue', 'yellow'];
         $labels = array_merge(range(0, 9), ['S', 'X', '+2']);
         
@@ -17,6 +19,7 @@ class CardsService {
         $card->setLabel($labels[array_rand($labels)]);
         $card->setIdPlayer($idPlayer);
         $card->setIsPlayed($isPlayed);
+        $card->setGame($idGame);
         $entityManager->persist($card);
         $entityManager->flush();
     }

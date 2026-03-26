@@ -10,7 +10,7 @@ use App\Repository\CardRepository;
 
 final class PlayController extends AbstractController
 {
-    #[Route('/play', name: 'app_play')]
+    #[Route('/play/{playerName}', name: 'app_play')]
     public function index(CardRepository $cardRepository, CardsService $cardsService): Response
     {
         $cards = $cardsService->getCardByPlayer($cardRepository, 1);

@@ -17,8 +17,8 @@
 
     {% for card in cards %}
         <div style="background-color:{{ card.color }};">
-        <a href="{{ path('app_player', {'id': card.id}) }} style="color: white; text-decoration: none;">
-            <p>{{ card.label }} - {{ card.color }}</p>
+        <a href="{{ path('app_player', {'id': card.id}) }}"style=" text-decoration: none;">
+            <p style="color: white;">{{ card.label }} - {{ card.color }}</p>
         </a>
         </div>
     {% endfor %}

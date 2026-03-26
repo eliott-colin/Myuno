@@ -14,7 +14,12 @@
         <img src="{{ asset('assets/img/start.png') }}" alt="Images de lancement d'application uno avec des cartes et le logo uno" style=" display: block; max-width: 100%; height: auto;">
     </div>
     
-    <a href="{{ path('app_start') }}">Start</a>
+    
+    <form action="{{ path('app_start') }}" method="post">
+        <label for="pseudo">Entrez votre pseudo :</label>
+        <input type="text" id="pseudo" name="pseudo" placeholder="Pseudo">
+        <button type="submit">Start</button>
+    </form>
 
 </div>
 {% endblock %}
