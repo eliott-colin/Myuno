@@ -7,22 +7,22 @@ use App\Entity\Game;
 use Doctrine\ORM\EntityManagerInterface;
 
 class GameService {
-    public function initGame(string $playerName, GameRepository $gameRepository , EntityManagerInterface $entityManager): Game | false
+    public function initGame(string $playerName, EntityManagerInterface $entityManager): Game
     {
-        $gameExist = $gameRepository->findBy(['player' => $playerName]);
-        if ($gameExist === []) {
-            return false;
-        }else {
-            $game = new Game();
-            $game->setPlayer($playerName);
-            $entityManager->persist($game);
-            $entityManager->flush();
-            return $game;   
-        }
+        $game = new Game();
+        $game->setPlayer($playerName);
+        $game->setCurrentPlayer(4);
+        $game->setDirection(1);
+        $game->setPendingDraw(0);
+
+        $entityManager->persist($game);
+        $entityManager->flush();
+
+        return $game;
     }
     public function getIdGameByPlayerName(string $playerName, GameRepository $gameRepository): Game | null
     {    
-        $game = $gameRepository->findOneBy(['player' => $playerName]);
+        $game = $gameRepository->findOneBy(['player' => $playerName], ['id' => 'DESC']);
         return $game;
     }   
 }

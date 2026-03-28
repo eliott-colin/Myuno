@@ -6,25 +6,169 @@
 <style>
     .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
     .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+    .players-board {
+        margin: 0.8rem 0;
+        padding: 0.7rem;
+        border-radius: 12px;
+        border: 2px solid #7f1d1d;
+        background: linear-gradient(165deg, #0b0b0b 0%, #1a0505 55%, #2b0909 100%);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+    }
+    .player-row {
+        margin: 0.35rem 0;
+        color: #f3f4f6;
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+    }
+    .player-row.active {
+        color: #fecaca;
+        font-weight: 700;
+        text-shadow: 0 0 7px rgba(220, 38, 38, 0.55);
+    }
+    .player-label { min-width: 150px; }
+    .counter-badge {
+        min-width: 30px;
+        text-align: center;
+        font-weight: 700;
+        padding: 0.1rem 0.35rem;
+        border-radius: 999px;
+        background: #111827;
+        border: 1px solid #ef4444;
+        color: #fef2f2;
+    }
+    .hidden-cards { display: flex; gap: 0.2rem; flex-wrap: wrap; }
+    .hidden-card {
+        width: 18px;
+        height: 22px;
+        border-radius: 4px;
+        border: 1px solid #f87171;
+        background: #111;
+        color: #fecaca;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        line-height: 1;
+        font-weight: 700;
+    }
+    .hidden-more { color: #fca5a5; font-size: 0.85rem; }
+    .cards-row { display: flex; flex-wrap: wrap; gap: 0.45rem; margin: 0.8rem 0; }
+    .uno-card {
+        width: 54px;
+        height: 54px;
+        border-radius: 8px;
+        border: 2px solid rgba(0, 0, 0, 0.2);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.95rem;
+        line-height: 1;
+        text-transform: uppercase;
+    }
+    .uno-card.is-clickable { cursor: pointer; }
+    .uno-card.red { background: #d7263d; color: #fff; }
+    .uno-card.blue { background: #1f6feb; color: #fff; }
+    .uno-card.green { background: #1f9d55; color: #fff; }
+    .uno-card.yellow { background: #ffd43b; color: #1f2937; }
+    .uno-card.disabled { opacity: 0.6; }
+    .pile-box { margin-top: 1rem; }
+    .win-box {
+        margin: 1rem 0;
+        padding: 0.8rem;
+        border: 2px solid #166534;
+        border-radius: 8px;
+        background: #14532d;
+        color: #f0fdf4;
+    }
+    .win-actions { display: flex; gap: 0.6rem; align-items: center; margin-top: 0.6rem; }
+    .win-btn {
+        display: inline-block;
+        padding: 0.4rem 0.9rem;
+        border: 1px solid #bbf7d0;
+        border-radius: 6px;
+        color: #052e16;
+        text-decoration: none;
+        background: #dcfce7;
+        font-weight: 700;
+        line-height: 1.2;
+        cursor: pointer;
+    }
 </style>
 
 <div class="example-wrapper">
     <h1>Myuno</h1>
 
-    {% for i in 1..4 %}
-        <p>Joueur {{ i == 4 ? ' (Vous)' : i }} : {{ cardCount[i-1] ?? 0 }}</p>
-    {% endfor %}
-
-    {% for card in cards %}
-        <div style="background-color:{{ card.color }};">
-        <a href="{{ path('app_player', {'id': card.id}) }}"style=" text-decoration: none;">
-            <p style="color: white;">{{ card.label }} - {{ card.color }}</p>
-        </a>
+    {% if isGameOver %}
+        <div class="win-box">
+            <p>Partie terminee. Gagnant : {{ winnerLabel }}</p>
+            <div class="win-actions">
+                <form action="{{ path('app_start') }}" method="post" style="margin: 0;">
+                    <input type="hidden" name="pseudo" value="{{ playerName }}">
+                    <button type="submit" class="win-btn">Rejouer</button>
+                </form>
+                <a href="{{ path('app_home') }}" class="win-btn">Retour accueil</a>
+            </div>
         </div>
-    {% endfor %}
+    {% else %}
+        <p>Tour actuel : {{ currentPlayerLabel }}</p>
+    {% endif %}
 
-    <p>{{ cardInit.label }} - {{ cardInit.color }} - {{ cardInit.isPlayed|date('Y-m-d H:i:s') }}</p>
+    {% if not isGameOver %}
+        <form action="{{ path('app_draw', {'playerName': playerName}) }}" method="post" style="margin: 1rem 0;">
+            <button type="submit" {% if not canPlayerDraw %}disabled{% endif %}>Piocher une carte</button>
+        </form>
+    {% endif %}
 
-    
+    <div class="players-board">
+        {% for id, name in playerNames %}
+            {% set count = cardCountByPlayer[id] ?? 0 %}
+            {% set visibleHiddenCards = count > 10 ? 10 : count %}
+            <div class="player-row{% if id == currentPlayer %} active{% endif %}">
+                <span class="player-label">{{ name }}</span>
+                <span class="counter-badge">{{ count }}</span>
+                <span class="hidden-cards" aria-hidden="true">
+                    {% for j in 1..visibleHiddenCards %}
+                        <span class="hidden-card">?</span>
+                    {% endfor %}
+                    {% if count > visibleHiddenCards %}
+                        <span class="hidden-more">+{{ count - visibleHiddenCards }}</span>
+                    {% endif %}
+                </span>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="cards-row">
+        {% for card in cards %}
+            {% if not isGameOver and currentPlayer == 4 and card.id in playableCardIds %}
+                <form action="{{ path('app_player') }}" method="post" style="margin: 0;">
+                    <input type="hidden" name="id" value="{{ card.id }}">
+                    <button type="submit" class="uno-card is-clickable {{ card.color }}" aria-label="Jouer la carte {{ card.label }}">
+                        {{ card.label }}
+                    </button>
+                </form>
+            {% else %}
+                <span class="uno-card disabled {{ card.color }}" aria-hidden="true">{{ card.label }}</span>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    {% if cardInit %}
+        <div class="pile-box">
+            <p>Pile :</p>
+            <span class="uno-card {{ cardInit.color }}">{{ cardInit.label }}</span>
+        </div>
+    {% endif %}
+
+    {% if not isGameOver and currentPlayer != 4 %}
+        <p>{{ currentPlayerLabel }} joue...</p>
+        <script>
+            setTimeout(function () {
+                window.location.href = "{{ path('app_enemy', {'id': currentPlayer}) }}";
+            }, 3000);
+        </script>
+    {% endif %}
 </div>
 {% endblock %}
