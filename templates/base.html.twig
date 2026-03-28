@@ -11,7 +11,7 @@
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     </head>
-    <body>
+    <body style="background: url('{{ asset('assets/img/homeBg.png') }}'); background-size: cover;padding: 2rem; borderRadius: 12px;">
         {% block body %}{% endblock %}
     </body>
 </html>
