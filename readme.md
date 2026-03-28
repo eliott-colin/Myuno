@@ -1,7 +1,8 @@
-Myuno
+## Myuno
 
-Modifier le .env avec votre lien vers votre BDD.
+Modifier le `.env` avec votre lien vers votre BDD.
 
+```
 ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 ░░░░░░░░░░░░░▄▄▄▄▄▄▄░░░░░░░░░
 ░░░░░░░░░▄▀▀▀░░░░░░░▀▄░░░░░░░
@@ -21,3 +22,4 @@ Modifier le .env avec votre lien vers votre BDD.
 ░░░░▐▌▀▄░░░░░░░░░░░░░░░░░▐▌░░
 ░░░░░█░░▀░░░░░░░░░░░░░░░░▀░░░
 ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+```
